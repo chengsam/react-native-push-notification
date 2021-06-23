@@ -40,6 +40,7 @@ public class RNReceivedMessageHandler {
     public void handleReceivedMessage(RemoteMessage message) {
         String from = message.getFrom();
         RemoteMessage.Notification remoteNotification = message.getNotification();
+        Map<String, String> notificationData = message.getData();
         final Bundle bundle = new Bundle();
         // Putting it from remoteNotification first so it can be overriden if message
         // data has it
@@ -115,10 +116,17 @@ public class RNReceivedMessageHandler {
                 bundle.putString("bigPictureUrl", imageUrl);
                 bundle.putString("largeIconUrl", imageUrl);
             }
+        } else {
+            String content = notificationData.get("content");
+            if (content != null) {
+                bundle.putString("message", content);
+            } else {
+                bundle.putString("message", "Notification");
+            }
+            bundle.putString("smallIcon", "status_bar_icon");
         }
 
         Bundle dataBundle = new Bundle();
-        Map<String, String> notificationData = message.getData();
         
         for(Map.Entry<String, String> entry : notificationData.entrySet()) {
             dataBundle.putString(entry.getKey(), entry.getValue());
